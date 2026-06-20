@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タスク管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <h1>タスク管理アプリ</h1>
+    </header>
+    <div class="container">
+        <div class="toolbar">
+            <span th:text="'全 ' + ${tasks.size()} + ' 件'"></span>
+            <a th:href="@{/tasks/new}" class="btn btn-primary">新規タスク</a>
+        </div>
+
+        <div th:if="${tasks.isEmpty()}" class="empty-message">
+            タスクがありません。「新規タスク」から追加してください。
+        </div>
+
+        <ul class="task-list">
+            <li th:each="task : ${tasks}" class="task-item" th:classappend="${task.completed} ? 'completed'">
+                <div class="task-info">
+                    <div class="task-title" th:text="${task.title}"></div>
+                    <div class="task-description" th:if="${task.description}" th:text="${task.description}"></div>
+                    <div class="task-date" th:text="'作成: ' + ${#temporals.format(task.createdAt, 'yyyy/MM/dd HH:mm')}"></div>
+                </div>
+                <div class="task-actions">
+                    <form th:action="@{/tasks/{id}/toggle(id=${task.id})}" method="post">
+                        <button type="submit" class="btn btn-sm" th:classappend="${task.completed} ? 'btn-secondary' : 'btn-success'"
+                                th:text="${task.completed} ? '未完了に戻す' : '完了'"></button>
+                    </form>
+                    <a th:href="@{/tasks/{id}/edit(id=${task.id})}" class="btn btn-sm btn-primary">編集</a>
+                    <form th:action="@{/tasks/{id}/delete(id=${task.id})}" method="post"
+                          onsubmit="return confirm('このタスクを削除しますか？')">
+                        <button type="submit" class="btn btn-sm btn-danger">削除</button>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
